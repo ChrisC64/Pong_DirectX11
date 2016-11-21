@@ -5,7 +5,7 @@
 #define TRACE(x) OutputDebugString(x)
 #endif _DEBUG
 
-#include "..\..\Actors\HeaderFiles\Cube.h"
+#include "DataStructs.h"
 
 // Add libraries //
 #pragma comment(lib, "d3d11.lib")
@@ -27,7 +27,7 @@ private:
 
     };
 
-    Cube m_Cube; // Test object
+    //Cube m_Cube; // Test object
 
     // Window Variables //
     HWND                    m_HWnd;          // Handler to the window
@@ -120,10 +120,6 @@ public:
     ~DirectX11_Device();
 
     // GET METHODS //
-    ID3D11DeviceContext* GetDeviceContext();
-    ID3D11RenderTargetView* GetRenderTargetView();
-    ID3D11Device* GetDevice();
-    IDXGISwapChain* GetSwapChain();
     HWND* GetHWND();
 
     /* Name: InitDevice(HWND hwnd)
@@ -133,6 +129,50 @@ public:
     */
     bool InitDevice(const int SCREEN_WIDTH, const int SCREEN_HEIGHT, HWND hWnd, bool isFullScreen);
 
+    /* Name: GetImmediateContext()
+    Param: void
+    Return: Microsoft::WRL::ComPtr<ID3D11DeviceContext>
+    Info: Returns a ComPtr to the COM Object ID3D11DeviceContext
+    */
+    Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain();
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetImmediateContext();
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GetDepthStencilView();
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GetRenderTargetView();
+    // TODO: Remove this and have Pixel Shader references not in the device class here, but perhaps by MeshObjects or Object class itself?
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> GetPixelShader();
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> GetSolidShader();
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> GetVertexShader();
+    Microsoft::WRL::ComPtr<ID3D11Buffer> GetConstantBuffer();
+
+    /* Name: SetVertexBuffer()
+    Param: void*, ComPtr<ID3D11Buffer>
+    Return: HRESULT
+    Info: Set the buffer for the object passing the (void*) of the object's memory location and object's ID3D11Buffer vertex buffer
+    */
+    HRESULT SetVertexBuffer(const void* mem, Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer, const unsigned int offset, const unsigned int byteWidth);
+
+    /* Name: SetIndexBuffer()
+    Param: void*, ComPtr<ID3D11Buffer>
+    Return: HRESULT
+    Info: Set the index buffer of the object passing (void*) of the object's memory location and object's ID3D11Buffer index buffer
+    */
+    HRESULT SetIndexBuffer(const void* mem, Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer, const unsigned int offset, const unsigned int byteWidth);
+
+    /* Name GetScreenWidth()
+    Param: void
+    Return: unsigned int
+    Info: Get the screen width for the set device
+    */
+    UINT GetScreenWidth();
+    UINT GetScreenHeight();
+
+    // GET MATRICES METHODS //
+    //TODO: Temporary, I should create a "World" class that holds our matrices for the game world and a camera shortly after. 
+    /*DirectX::XMMATRIX GetWorldMatrix();
+    DirectX::XMMATRIX GetProjectionMatrix();
+    DirectX::XMMATRIX GetViewMatrix();*/
+
+private:
     /* Name: InitRenderTarget()
     Param: Void
     Return: HRESULT
@@ -267,12 +307,5 @@ public:
     Info: Create a debug device
     */
     HRESULT CreateDebugDevice();
-
-    /* Name: GetImmediateContext()
-    Param: void
-    Return: Microsoft::WRL::ComPtr<ID3D11DeviceContext>
-    Info: Returns a ComPtr to the COM Object ID3D11DeviceContext
-    */
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetImmediateContext();
 };
 

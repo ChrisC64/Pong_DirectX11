@@ -23,33 +23,13 @@ m_pD3dImmediateContext1(0)
     m_Color[1] = 0.2f;
     m_Color[2] = 0.4f;
     m_Color[3] = 1.0f;
-    m_Cube = Cube();
+    //m_Cube = Cube();
 }
 
 
 DirectX11_Device::~DirectX11_Device()
 {
     Shutdown();
-}
-
-ID3D11DeviceContext * DirectX11_Device::GetDeviceContext()
-{
-    return nullptr;
-}
-
-ID3D11RenderTargetView * DirectX11_Device::GetRenderTargetView()
-{
-    return nullptr;
-}
-
-ID3D11Device * DirectX11_Device::GetDevice()
-{
-    return nullptr;
-}
-
-IDXGISwapChain * DirectX11_Device::GetSwapChain()
-{
-    return nullptr;
 }
 
 HWND * DirectX11_Device::GetHWND()
@@ -464,13 +444,13 @@ HRESULT DirectX11_Device::InitVertBuffer()
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = m_Cube.GetVertexListByteWidth();
+    //bd.ByteWidth = m_Cube.GetVertexListByteWidth();
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     // Initialize subresource - Location of data
     D3D11_SUBRESOURCE_DATA InitData;
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = m_Cube.GetVertexLayoutAddress();
+    //InitData.pSysMem = m_Cube.GetVertexLayoutAddress();
     // Create buffer
     hr = m_pD3dDevice.Get()->CreateBuffer(&bd, &InitData, m_pVertexBuffer.GetAddressOf());
     if (FAILED(hr))
@@ -485,10 +465,10 @@ HRESULT DirectX11_Device::InitVertBuffer()
 
     // CREATE INDEX BUFFER //
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = m_Cube.GetIndexListByteWidth();
+    //bd.ByteWidth = m_Cube.GetIndexListByteWidth();
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = 0;
-    InitData.pSysMem = m_Cube.m_IndexList;
+    //InitData.pSysMem = m_Cube.m_IndexList;
     hr = m_pD3dDevice.Get()->CreateBuffer(&bd, &InitData, m_pIndexBuffer.GetAddressOf());
     if (FAILED(hr))
         return hr;
@@ -508,18 +488,18 @@ HRESULT DirectX11_Device::InitIndexBuffer()
 
     // Create index buffer
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = m_Cube.GetIndexListByteWidth();
+    //bd.ByteWidth = m_Cube.GetIndexListByteWidth();
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = 0;
 
     D3D11_SUBRESOURCE_DATA InitData;
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = m_Cube.m_IndexList;
+    //InitData.pSysMem = m_Cube.m_IndexList;
 
     HRESULT hr = m_pD3dDevice.Get()->CreateBuffer(&bd, &InitData, m_pIndexBuffer.GetAddressOf());
     if (FAILED(hr))
     {
-        TRACE(L"Failed to create Index buffer");
+        TRACE(L"Failed to create Index buffer\n");
         return hr;
     }
     // Set index buffer
@@ -654,13 +634,13 @@ void DirectX11_Device::Shutdown()
     m_pVSBlob.Reset();
     m_pD3dImmediateContext.Reset();
     m_pD3dImmediateContext1.Reset();
-//#ifdef _DEBUG
-//    HRESULT hr;
-//    hr = m_pDebug.Get()->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-//    if (FAILED(hr))
-//        TRACE(L"Failed to report live objects");
-//    m_pDebug.Reset();
-//#endif
+#ifdef _DEBUG
+    HRESULT hr;
+    hr = m_pDebug.Get()->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+    if (FAILED(hr))
+        TRACE(L"Failed to report live objects");
+    m_pDebug.Reset();
+#endif
     m_pD3dDevice.Reset();
     m_pDxDevice1.Reset();
 }
@@ -817,7 +797,113 @@ HRESULT DirectX11_Device::CreateDebugDevice()
     return hr;
 }
 
+Microsoft::WRL::ComPtr<IDXGISwapChain> DirectX11_Device::GetSwapChain()
+{
+    return m_pSwapChain;
+}
+
 Microsoft::WRL::ComPtr<ID3D11DeviceContext> DirectX11_Device::GetImmediateContext()
 {
     return m_pD3dImmediateContext;
+}
+
+Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DirectX11_Device::GetDepthStencilView()
+{
+    return m_pDepthStencilView;
+}
+
+Microsoft::WRL::ComPtr<ID3D11RenderTargetView> DirectX11_Device::GetRenderTargetView()
+{
+    return m_pRenderTargetView;
+}
+
+Microsoft::WRL::ComPtr<ID3D11PixelShader> DirectX11_Device::GetPixelShader()
+{
+    return m_pPixelShader;
+}
+
+Microsoft::WRL::ComPtr<ID3D11PixelShader> DirectX11_Device::GetSolidShader()
+{
+    return m_pPixelShaderSolid;
+}
+
+Microsoft::WRL::ComPtr<ID3D11VertexShader> DirectX11_Device::GetVertexShader()
+{
+    return m_pVertexShader;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Buffer> DirectX11_Device::GetConstantBuffer()
+{
+    return m_pConstantBuffer;
+}
+
+HRESULT DirectX11_Device::SetVertexBuffer(const void * mem, Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer, const unsigned int offset, const unsigned int byteWidth)
+{
+    if (!m_pD3dDevice || !m_pD3dImmediateContext || !mem || !vertexBuffer)
+        return E_FAIL;
+
+    HRESULT hr;
+    // Create Vertex buffer
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = byteWidth;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+    // Initialize subresource - Location of data
+    D3D11_SUBRESOURCE_DATA InitData;
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = mem;
+    // Create buffer
+    hr = m_pD3dDevice.Get()->CreateBuffer(&bd, &InitData, vertexBuffer.GetAddressOf());
+    if (FAILED(hr))
+    {
+        TRACE(L"Failed to Set Vertex Buffer\n");
+        return hr;
+    }
+    // Set vertex buffer
+    UINT stride = sizeof(GameStruct::DataStructs::VertexLayout);
+    //UINT offset = 0; //TODO Will this overwrite our previous buffers? How can I obtain the offset from our current buffer? 
+    m_pD3dImmediateContext.Get()->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    return S_OK;
+}
+
+HRESULT DirectX11_Device::SetIndexBuffer(const void * mem, Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer, const unsigned int offset, const unsigned int byteWidth)
+{
+    if (!m_pD3dDevice || !m_pD3dImmediateContext || !mem || !indexBuffer)
+        return E_FAIL;
+
+    // Create Vertex buffer
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+
+    // Create index buffer
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = byteWidth;
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA InitData;
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = mem;
+
+    HRESULT hr = m_pD3dDevice.Get()->CreateBuffer(&bd, &InitData, indexBuffer.GetAddressOf());
+    if (FAILED(hr))
+    {
+        TRACE(L"Failed to set Index buffer for object\n");
+        return hr;
+    }
+    // Set index buffer
+    m_pD3dImmediateContext.Get()->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, offset);
+    return S_OK;
+}
+
+UINT DirectX11_Device::GetScreenWidth()
+{
+    return m_ScreenWidth;
+}
+
+UINT DirectX11_Device::GetScreenHeight()
+{
+    return m_ScreenHeight;
 }

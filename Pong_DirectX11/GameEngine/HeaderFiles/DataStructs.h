@@ -28,6 +28,16 @@ namespace GameStruct
                 dest.z = targ.z;
             }
         };
+
+        struct ConstantBuffer
+        {
+            DirectX::XMMATRIX world;
+            DirectX::XMMATRIX view;
+            DirectX::XMMATRIX proj;
+            DirectX::XMFLOAT4 vLightDir[2];
+            DirectX::XMFLOAT4 vLightColor[2];
+            DirectX::XMFLOAT4 vOutputColor;
+        };
     };
 }
 #endif

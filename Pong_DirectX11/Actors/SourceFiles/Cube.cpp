@@ -1,7 +1,5 @@
 #include "..\HeaderFiles\Cube.h"
 
-using namespace DirectX;
-
 Cube::Cube() : 
 m_PosX(0),
 m_PosY(0),
@@ -46,9 +44,10 @@ Cube::Cube(DirectX::XMFLOAT3 posArr[], DirectX::XMFLOAT3 normArr[]) :
             m_VertexLayout[count] = { posArr[count], normArr[count] };
         }
     }
+
 }
 
-Cube::Cube(VertexLayout vertLayArr[]) :
+Cube::Cube(VertLayout vertLayArr[]) :
     m_PosX(0),
     m_PosY(0),
     m_PosZ(0),
@@ -76,23 +75,23 @@ Cube::Cube(VertexLayout vertLayArr[]) :
     {
         m_VertexLayout[count] = { vertLayArr[count].Pos, vertLayArr[count].Normal };
     }
+
 }
 
 void Cube::Init()
 {
     // Vertex Layout setup
-    //TODO: Problem here is not using the other NORMALS when doing our lighting. This will cause issues. Should we create our Structures for POS/NORMALs and assign one to each Cube object?
-    m_VertexLayout[0] = { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
-    m_VertexLayout[1] = { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
-    m_VertexLayout[2] = { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
-    m_VertexLayout[3] = { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
+    m_VertexLayout[0] = { DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
+    m_VertexLayout[1] = { DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f),  DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
+    m_VertexLayout[2] = { DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),   DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
+    m_VertexLayout[3] = { DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f),  DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
 
-    m_VertexLayout[4] = { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
-    m_VertexLayout[5] = { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
-    m_VertexLayout[6] = { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
-    m_VertexLayout[7] = { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+    m_VertexLayout[4] = { DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
+    m_VertexLayout[5] = { DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),  DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
+    m_VertexLayout[6] = { DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f),   DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
+    m_VertexLayout[7] = { DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
     
-    m_VertexLayout[8] = { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+    /*m_VertexLayout[8] = { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
     m_VertexLayout[9] = { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
     m_VertexLayout[10] = { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
     m_VertexLayout[11] = { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
@@ -111,26 +110,27 @@ void Cube::Init()
     m_VertexLayout[21] = { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
     m_VertexLayout[22] = { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
     m_VertexLayout[23] = { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
-
+*/
     // Index List setup
-    //m_IndexList[0] = 3; m_IndexList[1] = 1; m_IndexList[2] = 0;
-    //m_IndexList[3] = 2; m_IndexList[4] = 1; m_IndexList[5] = 3;
-
-    //m_IndexList[6] = 0; m_IndexList[7] = 5; m_IndexList[8] = 4;
-    //m_IndexList[9] = 1; m_IndexList[10] = 5; m_IndexList[11] = 0;
-
-    //m_IndexList[12] = 3; m_IndexList[13] = 4; m_IndexList[14] = 7;
-    //m_IndexList[15] = 0; m_IndexList[16] = 4; m_IndexList[17] = 3;
-
-    //m_IndexList[18] = 1; m_IndexList[19] = 6; m_IndexList[20] = 5;
-    //m_IndexList[21] = 2; m_IndexList[22] = 6; m_IndexList[23] = 1;
-
-    //m_IndexList[24] = 2; m_IndexList[25] = 7; m_IndexList[26] = 6;
-    //m_IndexList[27] = 3; m_IndexList[28] = 7; m_IndexList[29] = 2;
-
-    //m_IndexList[30] = 6; m_IndexList[31] = 4; m_IndexList[32] = 5;
-    //m_IndexList[33] = 7; m_IndexList[34] = 4; m_IndexList[35] = 6;
     m_IndexList[0] = 3; m_IndexList[1] = 1; m_IndexList[2] = 0;
+    m_IndexList[3] = 2; m_IndexList[4] = 1; m_IndexList[5] = 3;
+
+    m_IndexList[6] = 0; m_IndexList[7] = 5; m_IndexList[8] = 4;
+    m_IndexList[9] = 1; m_IndexList[10] = 5; m_IndexList[11] = 0;
+
+    m_IndexList[12] = 3; m_IndexList[13] = 4; m_IndexList[14] = 7;
+    m_IndexList[15] = 0; m_IndexList[16] = 4; m_IndexList[17] = 3;
+
+    m_IndexList[18] = 1; m_IndexList[19] = 6; m_IndexList[20] = 5;
+    m_IndexList[21] = 2; m_IndexList[22] = 6; m_IndexList[23] = 1;
+
+    m_IndexList[24] = 2; m_IndexList[25] = 7; m_IndexList[26] = 6;
+    m_IndexList[27] = 3; m_IndexList[28] = 7; m_IndexList[29] = 2;
+
+    m_IndexList[30] = 6; m_IndexList[31] = 4; m_IndexList[32] = 5;
+    m_IndexList[33] = 7; m_IndexList[34] = 4; m_IndexList[35] = 6;
+    
+    /*m_IndexList[0] = 3; m_IndexList[1] = 1; m_IndexList[2] = 0;
     m_IndexList[3] = 2; m_IndexList[4] = 1; m_IndexList[5] = 3;
     
     m_IndexList[6] = 6; m_IndexList[7] = 4; m_IndexList[8] = 5;
@@ -146,7 +146,69 @@ void Cube::Init()
     m_IndexList[27] = 18; m_IndexList[28] = 17; m_IndexList[29] = 19;
 
     m_IndexList[30] = 22; m_IndexList[31] = 20; m_IndexList[32] = 21;
-    m_IndexList[33] = 23; m_IndexList[34] = 20; m_IndexList[35] = 22;
+    m_IndexList[33] = 23; m_IndexList[34] = 20; m_IndexList[35] = 22;*/
+}
+
+void Cube::Draw(std::shared_ptr<DirectXRender> render)
+{
+    // Perform the object's draw call here.
+    if (!render)
+    {
+        return;
+    }
+    //TODO: This should probably not be here in the call of the object, but higher up. 
+    static float t = 0.0f;
+    static ULONGLONG timeStart = 0;
+    ULONGLONG timeCur = GetTickCount64();
+    if (timeStart == 0)
+        timeStart = timeCur;
+    t = (timeCur - timeStart) / 1000.0f;
+
+    render->m_World = DirectX::XMMatrixRotationY(t);
+
+    // Set up lighting parameters
+    DirectX::XMFLOAT4 vLightDirs[2] =
+    {
+        DirectX::XMFLOAT4(-0.577f, 0.577f, -0.577f, 1.0f),
+        DirectX::XMFLOAT4(0.0f, 0.0f, -1.0f, 1.0f),
+    };
+    DirectX::XMFLOAT4 vLightColors[2] =
+    {
+        DirectX::XMFLOAT4(0.10f, 0.50f, 0.25f, 1.0f),
+        DirectX::XMFLOAT4(0.5f, 0.0f, 0.5f, 1.0f)
+    };
+
+    // Rotate the second light around the origin
+    DirectX::XMMATRIX mRotate = DirectX::XMMatrixRotationY(-2.0f * t);
+    DirectX::XMVECTOR vLightDir = DirectX::XMLoadFloat4(&vLightDirs[1]);
+    vLightDir = XMVector3Transform(vLightDir, mRotate);
+    XMStoreFloat4(&vLightDirs[1], vLightDir);
+
+    // Clear the back buffer
+    render->m_pImmediateContext.Get()->ClearRenderTargetView(render->m_pRenderTarget.Get(), DirectX::Colors::MidnightBlue);
+    // Clear the depth buffer
+    render->m_pImmediateContext.Get()->ClearDepthStencilView(render->m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+    GameStruct::DataStructs::ConstantBuffer cb;
+    cb.world = XMMatrixTranspose(render->m_World);
+    cb.view = XMMatrixTranspose(render->m_View);
+    cb.proj = XMMatrixTranspose(render->m_Projection);
+    cb.vLightDir[0] = vLightDirs[0];
+    cb.vLightDir[1] = vLightDirs[1];
+    cb.vLightColor[0] = vLightColors[0];
+    cb.vLightColor[1] = vLightColors[1];
+    cb.vOutputColor = DirectX::XMFLOAT4(0, 0, 0, 0);
+    render->m_pImmediateContext.Get()->UpdateSubresource(render->m_pConstantBuffer.Get(), 0, nullptr, &cb, 0, 0);
+
+    // Render Object (First cube)
+    render->m_pImmediateContext.Get()->VSSetShader(render->m_pVertexShader.Get(), nullptr, 0);
+    render->m_pImmediateContext.Get()->VSSetConstantBuffers(0, 1, render->m_pConstantBuffer.GetAddressOf());
+    render->m_pImmediateContext.Get()->PSSetShader(render->m_pPixelShader.Get(), nullptr, 0);
+    render->m_pImmediateContext.Get()->PSSetConstantBuffers(0, 1, render->m_pConstantBuffer.GetAddressOf());
+    render->m_pImmediateContext.Get()->DrawIndexed((sizeof(m_IndexList)/sizeof(m_IndexList[0])), 0, 0);
+
+    // Present the scene
+    render->m_pSwapChain.Get()->Present(0, 0);
 }
 
 unsigned int Cube::GetVertexListByteWidth()

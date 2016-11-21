@@ -1,9 +1,9 @@
 #pragma once
-class IMeshObject
+class IMesh
 {
 public:
-    IMeshObject();
-    ~IMeshObject();
+    //IMesh();
+    virtual ~IMesh();
 
     virtual void* GetVertexLayoutAddress() = 0;
     /* Name: GetVertexListByteWidth();

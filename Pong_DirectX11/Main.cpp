@@ -1,6 +1,9 @@
 #include <iostream>
 #include <Windows.h>
+#include <memory>
 #include "GameEngine\HeaderFiles\DirectX11_Device.h"
+#include "GameEngine\HeaderFiles\DataStructs.h"
+#include "Actors\HeaderFiles\cube.h"
 #include "pch.h"
 /******
 *   GLOBAL VARIABLES
@@ -21,6 +24,7 @@ float   g_deltaTime;
 
 // Direct X global variables declared below (when created)
 DirectX11_Device g_Device;
+DirectXRender g_Render;
 // Entry point for the game or application
 
 int WINAPI WinMain(HINSTANCE hInstance,     // Handle to the Window
@@ -80,8 +84,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     simpArr[7] = { DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
 
     Cube myCube = Cube(simpArr);
-
-
+    //TODO: Set up so we initialize our buffers for the types of objects we are creating instead of one buffer based on just one type in our previous work. 
+    // Program will also require us to make multiple cubes and add those vertexlayout buffers we need for the different cubes.
+    // Afterward we should make sure our Render is set up properly, research more on these smart pointers. I think we need to consider how we make them and pass them into 
+    // the functions that require a unique_ptr or shared_ptr. These will probably need shared_ptr for our Render argument in our IObjects, not a shared_ptr, right?
 
     // Initialize the window
     InitWindow();
@@ -89,6 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (!g_Device.InitDevice(SCREEN_WIDTH, SCREEN_HEIGHT, g_hWnd, g_bWindowed)) {
         return 0;
     }
+    g_Render.SetRender(std::make_unique<DirectX11_Device>(g_Device));
     // Use msg structure for catching windows Messages
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
@@ -104,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
         else
         {
-            g_Device.Render();
+            //Draw here
         }
     }
     UnregisterClass(WINDOW_TITLE, g_hInstance);
