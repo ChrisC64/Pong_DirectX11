@@ -1,6 +1,7 @@
 #include "..\HeaderFiles\DirectX11_Device.h"
 using namespace Microsoft::WRL;
 using namespace DirectX;
+using namespace LunaSolEngine;
 
 DirectX11_Device::DirectX11_Device() : m_HWnd(0),
 m_bVsync(false),
@@ -135,36 +136,41 @@ bool DirectX11_Device::InitDevice(const int SCREEN_WIDTH, const int SCREEN_HEIGH
     
     //Compile Shaders
     TRACE(L"Compiling shaders...\n");
+    //TODO: Eventually we should compile shader objects before running, this could help speed up process as we don't do it during runtime
     hr = CompileShaders();
     if (FAILED(hr))
     {
         TRACE(L"Failed to compile shaders\n");
         return false;
     }
+    //TODO: Eventually I want to get this separate, a Camera class object or separate RenderTarget class should be made
     hr = InitRenderTarget();
     if (FAILED(hr))
     {
         TRACE(L"Failed to initialize Render Target\n");
         return false;
     }
-    hr = CreateInputLayout();
+    //TODO: This shall be moved to something separate. Move this to each IMesh type we create. (We want to create our own InputLayouts NormalPos, Color, etc.)
+    hr = InitInputLayout();
     if (FAILED(hr))
     {
         TRACE(L"Failed to create input layout\n");
         return false;
     }
-    hr = InitVertBuffer();
+    //TODO: We will need to create the vertex buffer when we have our objects first, just create the device only
+    /*hr = InitVertBuffer();
     if (FAILED(hr))
     {
         TRACE(L"Failed to intialize vertex buffer\n");
         return false;
-    }
-    hr = InitConstantBuffer();
+    }*/
+    //TODO: We should worry about creating the device, add the vertex /index buffer after we have created our objects
+    /*hr = InitConstantBuffer();
     if (FAILED(hr))
     {
         TRACE(L"Failed to initialize constant buffer\n");
         return false;
-    }
+    }*/
     hr = CreateTexture2DDesc();
     if (FAILED(hr))
     {
@@ -216,7 +222,7 @@ void DirectX11_Device::SetViewPort(int width, int height)
 
     m_pD3dImmediateContext.Get()->RSSetViewports(1, &vp);
 }
-
+//TODO: This should be removed and we should consider making a Render class that retains objects and calls their Draw calls or make different Render types for different effects?
 void DirectX11_Device::Render()
 {
     // Update our time
@@ -287,7 +293,7 @@ void DirectX11_Device::Render()
     //// Render cube
     //m_pD3dImmediateContext.Get()->DrawIndexed(36, 0, 0);
 
-    // Render each light (CPU work)
+    // Render each light (CPU work) - This should be a technique for objects that will be "lights" and in their assigned HLSL files
     for (int m = 0; m < 2; m++)
     {
         XMMATRIX mLight = XMMatrixTranslationFromVector(5.0f * XMLoadFloat4(&vLightDirs[m]));
@@ -459,7 +465,7 @@ HRESULT DirectX11_Device::InitVertBuffer()
         return hr;
     }
     // Set vertex buffer
-    UINT stride = sizeof(GameStruct::DataStructs::VertexLayout);
+    UINT stride = sizeof(GameStruct::DataStructs::VertLayoutPosNorm);
     UINT offset = 0;
     m_pD3dImmediateContext.Get()->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
 
@@ -702,7 +708,7 @@ DXGI_SWAP_CHAIN_DESC DirectX11_Device::CreateSwapChainDesc()
     return swapChainDesc;
 }
 
-HRESULT DirectX11_Device::CreateInputLayout()
+HRESULT DirectX11_Device::InitInputLayout()
 {
     if (!m_pD3dDevice || !m_pD3dImmediateContext)
         return E_FAIL;
@@ -713,7 +719,7 @@ HRESULT DirectX11_Device::CreateInputLayout()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };*/
-
+    //TODO: Objects or some other class object should have these descriptions, we then create them later
     D3D11_INPUT_ELEMENT_DESC vertDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -735,7 +741,9 @@ HRESULT DirectX11_Device::CreateInputLayout()
 
     return S_OK;
 }
-
+/*
+* Creates the World Matrix, this should be separate later on in a Camera class or just other class in general.
+*/
 void DirectX11_Device::InitWorldMatrix()
 {
     // Initialize World Matrix
@@ -749,7 +757,9 @@ void DirectX11_Device::InitWorldMatrix()
     // Initialize Projection Matrix
     m_Projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, m_ScreenWidth / (FLOAT)m_ScreenHeight, 0.01f, 100.0f);
 }
-
+/*
+* Creates the Depth Stencil View
+*/
 HRESULT DirectX11_Device::CreateTexture2DDesc()
 {
     if (!m_pD3dDevice)
@@ -788,7 +798,9 @@ HRESULT DirectX11_Device::CreateTexture2DDesc()
     m_pD3dImmediateContext.Get()->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
     return hr;
 }
-
+/*
+* Creates a debug device, used for checking live state of objects, only for debug use.
+*/
 HRESULT DirectX11_Device::CreateDebugDevice()
 {
     if (!m_pD3dDevice)
@@ -836,7 +848,13 @@ Microsoft::WRL::ComPtr<ID3D11Buffer> DirectX11_Device::GetConstantBuffer()
 {
     return m_pConstantBuffer;
 }
-
+/*
+* SetVertexBuffer : A function designed to create a new Vertex Buffer for an object. 
+* const void* : location of data
+* Microsoft::WRL::ComPtr<ID3D11Buffer>: the vertex buffer
+* const unsigned int: offset for memory location containing vertex data
+* const unsigned int: lenght of the memory block in bytes
+*/
 HRESULT DirectX11_Device::SetVertexBuffer(const void * mem, Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer, const unsigned int offset, const unsigned int byteWidth)
 {
     if (!m_pD3dDevice || !m_pD3dImmediateContext || !mem || !vertexBuffer)
@@ -862,12 +880,18 @@ HRESULT DirectX11_Device::SetVertexBuffer(const void * mem, Microsoft::WRL::ComP
         return hr;
     }
     // Set vertex buffer
-    UINT stride = sizeof(GameStruct::DataStructs::VertexLayout);
+    UINT stride = sizeof(GameStruct::DataStructs::VertLayoutPosNorm);
     //UINT offset = 0; //TODO Will this overwrite our previous buffers? How can I obtain the offset from our current buffer? 
     m_pD3dImmediateContext.Get()->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
     return S_OK;
 }
-
+/*
+* SetIndexBuffer: Creates an index buffer for the object
+* const void*: pointer to location in memory
+* Microsoft::WRL::ComPtr<ID3D11Buffer>: Index buffer 
+* const unsigned int: offset of memory location
+* const unsigned int: bytewidth of memory block
+*/
 HRESULT DirectX11_Device::SetIndexBuffer(const void * mem, Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer, const unsigned int offset, const unsigned int byteWidth)
 {
     if (!m_pD3dDevice || !m_pD3dImmediateContext || !mem || !indexBuffer)

@@ -6,6 +6,6 @@
 //}
 
 
-IObject::~IObject()
+LunaSolEngine::IObject::~IObject()
 {
 }

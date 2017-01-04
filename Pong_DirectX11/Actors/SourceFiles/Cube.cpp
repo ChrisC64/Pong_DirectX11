@@ -47,7 +47,7 @@ Cube::Cube(DirectX::XMFLOAT3 posArr[], DirectX::XMFLOAT3 normArr[]) :
 
 }
 
-Cube::Cube(VertLayout vertLayArr[]) :
+Cube::Cube(PosNormLayout vertLayArr[]) :
     m_PosX(0),
     m_PosY(0),
     m_PosZ(0),
@@ -199,7 +199,8 @@ void Cube::Draw(std::shared_ptr<DirectXRender> render)
     cb.vLightColor[1] = vLightColors[1];
     cb.vOutputColor = DirectX::XMFLOAT4(0, 0, 0, 0);
     render->m_pImmediateContext.Get()->UpdateSubresource(render->m_pConstantBuffer.Get(), 0, nullptr, &cb, 0, 0);
-
+    //TODO: Every IMesh type object should have its own call to the render. This call happens at our object
+    // then the IMesh type will perform work. For example a LightMesh might have different PS/VS shaders than a NormalMesh object
     // Render Object (First cube)
     render->m_pImmediateContext.Get()->VSSetShader(render->m_pVertexShader.Get(), nullptr, 0);
     render->m_pImmediateContext.Get()->VSSetConstantBuffers(0, 1, render->m_pConstantBuffer.GetAddressOf());
@@ -209,6 +210,16 @@ void Cube::Draw(std::shared_ptr<DirectXRender> render)
 
     // Present the scene
     render->m_pSwapChain.Get()->Present(0, 0);
+}
+
+/* Name: Update()
+Param: Void
+Return: Void
+Info: This will update the object's members. Responsible for updating position, transformation, scale, and other values that belong to this object.
+This call should be performed before we do our draw for the next frame.
+*/
+void Cube::Update()
+{
 }
 
 unsigned int Cube::GetVertexListByteWidth()

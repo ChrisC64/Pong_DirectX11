@@ -11,7 +11,7 @@
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 #define WINDOW_TITLE L"Chris Carlos"
-
+using namespace LunaSolEngine;
 HWND				g_hWnd;          // Handle to the window
 HINSTANCE			g_hInstance;	// Handle to the aplication instance
 bool				g_bWindowed;	// Boolean for window or full-screen mode
@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Set some variables that will be used in InitWindow()
     g_hInstance = hInstance;
     g_bWindowed = true;
-    GameStruct::DataStructs::VertexLayout simpArr[8];
+    GameStruct::DataStructs::VertLayoutPosNorm simpArr[8];
     simpArr[0] = { DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f),  DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
     simpArr[1] = { DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f),   DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
     simpArr[2] = { DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) };
@@ -83,7 +83,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     simpArr[6] = { DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f),   DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
     simpArr[7] = { DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f) };
 
-    Cube myCube = Cube(simpArr);
+    // Light Cube
+    GameStruct::DataStructs::VertLayoutPosNorm lightArr[8];
+    lightArr[0] = { DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+    lightArr[1] = { DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+    lightArr[2] = { DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f),  DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+    lightArr[3] = { DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f),   DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+    lightArr[4] = { DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f),   DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) };
+    lightArr[5] = { DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),  DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) };
+    lightArr[6] = { DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f),   DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) };
+    lightArr[7] = { DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),    DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) };
+
+    // Third Cube
+    GameStruct::DataStructs::VertLayoutPosNorm thirdArr[8];
+    thirdArr[0] = { DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f) };
+    thirdArr[1] = { DirectX::XMFLOAT3(1.0f, -1.0f, -1.0f),  DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f) };
+    thirdArr[2] = { DirectX::XMFLOAT3(1.0f, 1.0f, -1.0f),   DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f) };
+    thirdArr[3] = { DirectX::XMFLOAT3(-1.0f, 1.0f, -1.0f),  DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f) };
+    thirdArr[5] = { DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) };
+    thirdArr[6] = { DirectX::XMFLOAT3(1.0f, -1.0f, 1.0f),   DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) };
+    thirdArr[7] = { DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),    DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) };
+    thirdArr[0] = { DirectX::XMFLOAT3(-1.0f, 1.0f, 1.0f),   DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) };
+
+    Cube spinCube = Cube(simpArr);
+    Cube lightCube = Cube(lightArr);
+    Cube thirdCube = Cube(thirdArr);
     //TODO: Set up so we initialize our buffers for the types of objects we are creating instead of one buffer based on just one type in our previous work. 
     // Program will also require us to make multiple cubes and add those vertexlayout buffers we need for the different cubes.
     // Afterward we should make sure our Render is set up properly, research more on these smart pointers. I think we need to consider how we make them and pass them into 
@@ -123,29 +147,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
     switch (message)
     {
-    case (WM_PAINT):
-    {
-        InvalidateRect(hWnd, NULL, TRUE);
-        break;
-    }
-
-    case(WM_DESTROY):
-    {
-        PostQuitMessage(0);
-        break;
-    }
-
-    case(WM_KEYDOWN):
-    {
-        switch (wparam)
+        case (WM_PAINT):
         {
-        case VK_ESCAPE:
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        }
+
+        case(WM_DESTROY):
         {
             PostQuitMessage(0);
             break;
         }
+
+        case(WM_KEYDOWN):
+        {
+            switch (wparam)
+            {
+                case VK_ESCAPE:
+                {
+                    PostQuitMessage(0);
+                    break;
+                }
+            }
         }
-    }
     }
 
     return DefWindowProc(hWnd, message, wparam, lparam);

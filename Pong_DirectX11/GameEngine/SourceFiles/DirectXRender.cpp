@@ -1,5 +1,5 @@
 #include "..\HeaderFiles\DirectXRender.h"
-
+using namespace LunaSolEngine;
 
 
 DirectXRender::DirectXRender()

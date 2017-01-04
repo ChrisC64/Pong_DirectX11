@@ -2,26 +2,27 @@
 #include "..\..\pch.h"
 #include "..\..\GameEngine\HeaderFiles\DirectXRender.h"
 #include "..\..\GameEngine\HeaderFiles\DataStructs.h"
-#include "..\..\GameEngine\HeaderFiles\IMesh.h"
+#include "..\..\Meshes\HeaderFiles\IMesh.h"
+#include "..\..\Meshes\HeaderFiles\NormalPos_Mesh.h"
 #include "..\..\Objects\HeaderFiles\IObject.h"
 #include "GameActor.h"
 #include <memory>
 
 //#include "..\..\Objects\HeaderFiles\NormalObject.h"
-
-using VertLayout = GameStruct::DataStructs::VertexLayout;
+using namespace LunaSolEngine;
+using PosNormLayout = GameStruct::DataStructs::VertLayoutPosNorm;
 
 class Cube : 
-    public GameActor, public IMesh, public IObject
+    public GameActor, public NormalPos_Mesh, public IObject
 {
 public:
     Cube();
     ~Cube();
     Cube(DirectX::XMFLOAT3 posArr[], DirectX::XMFLOAT3 normArr[]);
-    Cube(VertLayout vertLayArr[]);
+    Cube(PosNormLayout vertLayArr[]);
 
     unsigned short m_IndexList[36]; // Index layout for trianglist
-    VertLayout m_VertexLayout[24]; // Our Vertex array used in our Vertex description
+    PosNormLayout m_VertexLayout[24]; // Our Vertex array used in our Vertex description
     
     // GET METHODS //
 
@@ -87,6 +88,9 @@ public:
     virtual void* GetVertexLayoutAddress();
     virtual unsigned int GetIndexListByteWidth();
     virtual void Draw(std::shared_ptr<DirectXRender> render);
+
+    // Inherited via IObject
+    virtual void Update();
 
 private:
     float m_PosX, m_PosY, m_PosZ; // Position of Cube
